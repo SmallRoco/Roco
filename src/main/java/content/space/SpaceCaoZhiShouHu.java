@@ -27,6 +27,7 @@ public class SpaceCaoZhiShouHu implements SpaceInterface{
 
     @Override
     public void pass(int i) {
+        if(resPet.getHp()<=0)return;
         if(nowCount==1){nowCount++; return;}
         resPet.statusChange(BaseFun.getRandom(7),2);
 
@@ -40,7 +41,7 @@ public class SpaceCaoZhiShouHu implements SpaceInterface{
 
 
     @Override
-    public void beMove(Pet resPet,Pet dstPet){
+    public void beMove(){
 
     }
 

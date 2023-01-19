@@ -8,8 +8,8 @@ import java.util.HashMap;
 
 public class AllConfig{
 
-    //public static String rootPath = "F:/洛克王国资源/";
-    public static String rootPath = "../../洛克王国资源/";
+    public static String rootPath = "F:/洛克王国资源/";
+    //public static String rootPath = "../../洛克王国资源/";
 
     static {
 

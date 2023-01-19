@@ -4,6 +4,7 @@ import Config.ConfigFile;
 import game.FightStart;
 import UI.MainFrame;
 import game.Game;
+import game.ui.PetList;
 
 import java.util.TreeSet;
 
@@ -180,6 +181,24 @@ public class BaseFun {
     }
 
     /**
+     * pp值不为1 的技能改变
+     * @param resPet
+     * @param change
+     * @return
+     */
+    public static int otherPpChangeByMaxNotEqualsOne(Pet resPet,int change){
+        int count = 0;
+        for (int i = 0; i <resPet.getSkills().size(); i++) {
+            if(resPet.getSkills().get(i)!=null){
+                if(resPet.getSkills().get(i).getPp()==1)continue;
+                resPet.getPps()[i] +=change;
+                count += change;
+            }
+        }
+        return count;
+    }
+
+    /**
      * 获取宠物系别数量
      */
     public static int getPetsTypeCount(Pet[] pets){
@@ -250,6 +269,7 @@ public class BaseFun {
     }
 
 
+
     /**
      * 模拟概率
      * @return 是否中
@@ -275,6 +295,12 @@ public class BaseFun {
         return (int)(Math.random()*i);
     }
 
+    /**
+     * 获取该宠物 对应技能的位置
+     * @param pet           宠物
+     * @param skillname        技能吗
+     * @return              -1 代表没带
+     */
     public static int getSkillIndex(Pet pet,String skillname){
         for (int i = 0; i <pet.getSkills().size(); i++) {
             if(pet.getSkills().get(i).getName().equals(skillname)){
@@ -354,10 +380,11 @@ public class BaseFun {
 
 
         //TODO 判断是否有威力提升
-        if(dstPet.getUpPower()>0){
+        if(srcPet.getUpPower()>0){
             damage*=1.25;
         }
 
+        damage *= srcPet.getAttLimit()/100.0;
 
         dstPet.setHp(dstPet.getHp()-damage);
         return damage;
@@ -422,13 +449,75 @@ public class BaseFun {
         Pet[] petList = getPetList(pet);
         for (int i = 0; i < petList.length; i++) {
             if(petList[i]==null)return false;
-            if(petList[i]==pet)continue;
+            if(petList[i]==pet||petList[i].getHp()<=0)continue;
             MainFrame.changePet(pet,i);
             return true;
         }
 
         return true;
     }
+
+    /**
+     * 净化所有存活宠物的异常与负面
+     * @param pets
+     * @return  净化的成功的次数
+     */
+    public static int clearAllActivePets(Pet[] pets){
+        int count = 0;
+        for (int i = 0; i < pets.length; i++) {
+            if(pets[i]==null)return count;
+            if(pets[i].getHp()<=0)continue;
+            count += pets[i].clearSelf();
+        }
+        return count;
+    }
+
+
+    /**
+     * 获取宠物列表中生命值最低的宠物
+     * @param petList
+     * @return
+     */
+    public static Pet getPetOfMinHp(Pet[] petList){
+
+        int index = -1;
+        int minHp = 10000;
+        for (int i = 0; i < petList.length; i++) {
+            if(petList[i]==null)return petList[index];
+            if(petList[i].getHp()<=0)continue;
+            if(petList[i].getHp()<minHp){
+                index = i;
+                minHp = petList[i].getHp();
+            }
+        }
+
+        return petList[index];
+
+    }
+
+    /**
+     * 获取己方生命值上限最高的宠物
+     * @param petList
+     * @return
+     */
+    public static Pet getPetOfMaxBaseHp(Pet[] petList){
+        int index = -1;
+        int maxBaseHp = 0;
+        for (int i = 0; i < petList.length; i++) {
+            if(petList[i]==null)return petList[index];
+            if(petList[i].getHp()<=0)continue;
+            if(petList[i].getBaseHp()>maxBaseHp){
+                index = i;
+                maxBaseHp = petList[i].getBaseHp();
+            }
+        }
+
+        return petList[index];
+    }
+
+
+
+
 
     /**
      * 计算裸伤

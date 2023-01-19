@@ -40,7 +40,12 @@ public class ConfigFile {
 
     static {
         PetNames = new File(AllConfig.rootPath+"宠物/").list();
+
+
+
         expression.put("暂时",2);
+        expression.put("短暂",2);
+        expression.put("短期",2);
 
         typeKeZhi.put("火",new String[]{"草","冰","虫","机械"});
         typeKeZhi.put("草",new String[]{"水","土","石"});
@@ -97,6 +102,7 @@ public class ConfigFile {
         putTypes("武斗酷猫","草");
         putTypes("福熙水灵","水");
         putTypes("赵云子龙","武");
+        putTypes("汐纱水王","水");
 
 
         petCanSkills.put("大寒",new String[]{"怪神之力","水之护盾","净化","恩怨","沉没打击","今朝醉","敌众水澧","灯影幽峻"});
@@ -110,7 +116,7 @@ public class ConfigFile {
         petCanSkills.put("武斗酷猫",new String[]{"叫声","猛烈撞击","藤之鞭","寄生种子","毒雾","催眠粉","突进","飞叶刀","甜蜜香气","魔法增效","莽撞","清醒","种子炸弹","花瓣群舞","光合作用","阳光烈焰","破土之力","嗜睡吸血","暴力汲取","绿色幻境","阳光护盾","慧根盾击"});
         petCanSkills.put("福熙水灵",new String[]{"净化","祈愿","洗礼","泄洪","水龙卷","甘霖普降","福盈门","阖家欢","春满枝","步青云"});
         petCanSkills.put("赵云子龙",new String[]{"苍龙追月","万夫莫敌","龙战于野","真龙乱舞","虚诱掩杀","蔚蓝龙息","灵域风暴","天若有情","一骑讨","龙之传承"});
-
+        petCanSkills.put("汐纱水王",new String[]{"冰冻","圣洁","恩泽","洗礼","净化","牺牲","碧天清晓","湍玉漱石","烟波长静","灵渊移星"});
     }
 
     public static void putTypes(String key,String value){

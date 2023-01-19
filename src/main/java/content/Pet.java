@@ -26,6 +26,7 @@ public class Pet{
      * @return              是否添加成功
      */
     public boolean addSpaces(String skillName,SpaceInterface space){
+        if(spaces.get(skillName)!=null)spaces.get(skillName).beMove();
         spaces.put(skillName,space);
         return true;
     }
@@ -95,8 +96,17 @@ public class Pet{
     int maxDamagedPower;
     //回合数
     int maxDamaged =0;
+    //减伤的规则 1是限制最大伤害，2是减伤百分比伤害
+    int downDamageRegular = 0;
     //命中下降 回合数
     int downHitRate = 0;
+    //本回合受伤的标志
+    boolean isBeDamage = false;
+    //攻击被限制强度  百分比
+    int attLimitPower = 100;
+    //攻击限制的回合数
+    int attLimitCount = 0;
+
 
     public void pass(){
         if(noDeBuff>0&&noDeBuff<1000)noDeBuff--;
@@ -105,6 +115,7 @@ public class Pet{
         if(noDamage>0&&noDamage<1000)noDamage--;
         if(maxDamaged>0&&maxDamaged<1000)maxDamaged--;
         if(downHitRate>0&&downHitRate<1000)downHitRate--;
+        if(attLimitCount>0&&attLimitCount<1000)attLimitCount--;
         Set<String> strings = marks.keySet();
         String[] strings1 = new String[strings.size()];
         strings.toArray(strings1);
@@ -118,6 +129,7 @@ public class Pet{
                 }
             }
         }
+        isBeDamage =false;
     }
 
     int hp;
@@ -281,27 +293,33 @@ public class Pet{
     /**
      * 完全净化
      */
-    public boolean clearSelf(){
+    public int clearSelf(){
         clearException();
         clearNoDebuff();
-        return true;
+        return clearException()+clearNoDebuff();
     }
     /**
      * 净化异常
      */
-    public boolean clearException(){
+    public int clearException(){
+        int size = status.size();
         status = new HashMap<>();
-        return true;
+        return size;
     }
 
     /**
      * 清除负面
      */
-    public boolean clearNoDebuff(){
+    public int clearNoDebuff(){
+        int count = 0;
         for (int i = 0; i <5; i++) {
-            if(appendStatus[i]<0)appendStatus[i]=0;
+            if(appendStatus[i]<0) {
+                count-=appendStatus[i];
+                appendStatus[i] = 0;
+
+            }
         }
-        return true;
+        return count;
     }
     /**
      * 清除强化
@@ -340,9 +358,10 @@ public class Pet{
         skills = new ArrayList<>(4);
         for (int i = 0; i <4; i++) {
             skills.add(SkillManager.getHashMap().get(skillNames[i]));
-            if(skills.get(i)==null)break;
+            if(skills.get(i)==null)continue;
             this.basePps[i] = skills.get(i).getPp();
             this.pps[i] = skills.get(i).getPp();
+            skills.get(i).init(this);
         }
 
     }
@@ -578,6 +597,7 @@ public class Pet{
         for (int i = 0; i <4; i++) {
             skills.add(SkillManager.getHashMap().get(skillnames[i]));
             if(skills.get(i)==null)continue;
+            skills.get(i).init(this);
             this.basePps[i] = skills.get(i).getPp();
             this.pps[i] = skills.get(i).getPp();
         }
@@ -708,7 +728,12 @@ public class Pet{
             }
 
 
-            damage = Math.min(damage,getMaxDamagedPower());
+            switch (getDownDamageRegular()){
+                case 1: damage = Math.min(damage,getMaxDamagedPower());
+                    break;
+                case 2: damage *= getMaxDamagedPower()/100.0;
+                    break;
+            }
 
             this.hp-= damage;
 
@@ -727,10 +752,20 @@ public class Pet{
         }
 
         //结果需要一个血量的变化量
-
+        if(damage>0){
+            isBeDamage = true;
+        }
 
         MainFrame.bloodChange(this,damage);
 
+    }
+
+    public boolean isBeDamage() {
+        return isBeDamage;
+    }
+
+    public void setBeDamage(boolean beDamage) {
+        isBeDamage = beDamage;
     }
 
     public int getPhysicalAttack() {
@@ -850,6 +885,7 @@ public class Pet{
     public void changePp(int index,int changeValue) {
         //禁用pp玩法
         if(!ConfigFile.CHANGE_PP)return;
+        if(index<0||index>=4)return;
         this.pps[index] = this.pps[index]+changeValue;
         if(this.pps[index]<0)this.pps[index]=0;
         else if(this.pps[index]>this.basePps[index])this.pps[index]=this.basePps[index];
@@ -880,6 +916,24 @@ public class Pet{
     }
 
 
+    /**
+     * 限制该宠物的攻击，按照百分比限制
+     * @param attLimitPower
+     * @param attLimitCount
+     * @return
+     */
+    public boolean setAttLimit(int attLimitPower,int attLimitCount){
+        this.attLimitPower = attLimitPower;
+        this.attLimitCount = attLimitCount;
+        return true;
+    }
+
+    public int getAttLimit(){
+        if(attLimitCount>0){
+            return attLimitPower;
+        }
+        return 100;
+    }
 
     public int getBaseBoom() {
         return baseBoom;
@@ -1010,7 +1064,24 @@ public class Pet{
     public void setMaxDamaged(int maxDamagedPower,int maxDamaged) {
         this.maxDamagedPower = maxDamagedPower;
         this.maxDamaged = maxDamaged;
+        this.downDamageRegular = 1;
     }
+
+    /**
+     * 按照百分比减伤
+     * @param pecent    百分比
+     * @param count     回合数
+     */
+    public void setDownDamage(int pecent,int count){
+        this.maxDamagedPower = pecent;
+        this.downDamageRegular=2;
+        this.maxDamaged=count;
+    }
+
+    public int getDownDamageRegular(){
+        return this.downDamageRegular;
+    }
+
 
     public int getMissRestraint() {
         return missRestraint;

@@ -17,7 +17,7 @@ public interface SpaceInterface {
 
     boolean isEnd();
 
-    void beMove(Pet resPet,Pet dstPet);
+    void beMove();
 
     void setDst(Pet dstPet);
 

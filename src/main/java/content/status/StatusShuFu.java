@@ -14,6 +14,8 @@ public class StatusShuFu implements StatusInterface {
 
     @Override
     public int on(Pet pet) {
+
+        if(count==-1)count=4;
         if(count--<=0){
             return 1;
         }

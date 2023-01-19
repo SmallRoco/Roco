@@ -45,7 +45,7 @@ public class SpaceBase implements SpaceInterface{
     }
 
     @Override
-    public void beMove(Pet resPet,Pet dstPet){
+    public void beMove(){
         spaceOne.beMove(resPet,dstPet);
     }
 

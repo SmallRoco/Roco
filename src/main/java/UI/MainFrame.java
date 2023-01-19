@@ -6,6 +6,7 @@ import content.BaseFun;
 import content.Pet;
 import content.SkillInterface;
 import content.SkillManager;
+import content.netpetshow.SkillN;
 import content.space.SpaceInterface;
 import game.FightStart;
 import game.Game;
@@ -21,12 +22,20 @@ import java.util.Objects;
 
 public class MainFrame extends JFrame {
 
+
+    //用来表示先手
     public static boolean first = true;
 
 
+    //用来做窗口的拖动效果
     static int xOld = 0;
     static int yOld = 0;
 
+    //下一只出场宠物的增益
+    public static SkillN nextPetShow1;
+    public static SkillN nextPetShow2;
+
+    //游戏结束的标志
     public volatile static boolean gameOverFlag = false;
     public volatile static SpaceInterface space = null;
 
@@ -42,24 +51,33 @@ public class MainFrame extends JFrame {
     public static JLayeredPane jLayeredPane ;
     //public static Fighting fighting = new Fighting();
     public static JLabel backGround;
+    //两个用来显示宠物gif的label
     public static AnimalLabel pawn1;
     public static JLabel pawn2 ;
+    //宠物血条
     public static BloodLine bloodLine1 ;
     public static BloodLine bloodLine2 ;
+    //宠物图标 信息框
     public static IconLabel icon1 ;
     public static IconLabel icon2 ;
+    //技能栏背景
     public static JLabel skillLabel ;
+    //换宠按钮
     public static JLabel changePet ;
+    //逃跑按钮
     public static JLabel runLabel;
+    //四个技能条目
     public static SkillItemLabel[] skillItemLabels ;
+    //六个宠物条目
     public static PetItemLabel[] petItemLabels ;
     //异常效果动画播放器  睡眠，冰冻....
     public static JLabel[] statusLabel ;
+    //宠物状态栏
     public static JLabel[] statusShowLabel ;
     //脱手技能播放器   空气切割.热力爆弹....
     public static JLabel tuoShouSkillPlayer ;
 
-    //环境
+    //环境label   环境天气没有区分开 后面才知道有天气和环境之分
     public static JLabel environmentLabel ;
 
 
@@ -70,11 +88,18 @@ public class MainFrame extends JFrame {
     //标记是否克制        1克制   -1 抵抗
     public volatile static int keZhiFlag ;
 
+    //场上环境
     public static String environment = null;
+    //环境持续的回合数
     public static int environmentCount;
     //public static boolean environmentLock = false;
+    //环境被锁定的回合数
     public static int environmentLockCount = 0;
 
+    /**
+     * 环境是否被锁定
+     * @return
+     */
     public static boolean isEnvironmentLock() {
         return environmentCount>0;
     }
@@ -88,6 +113,12 @@ public class MainFrame extends JFrame {
         environmentLockCount = count;
     }
 
+    /**
+     * 设置环境
+     * @param en        环境名
+     * @param count     回合数
+     * @return      是否成功
+     */
     public static boolean setEnvironment(String en, int count){
         if(!ConfigFile.ENVIRONMENT_START)return false;
         if(environmentLockCount>0)return false;     //天气被锁定
@@ -102,13 +133,26 @@ public class MainFrame extends JFrame {
         return environment;
     }
 
+    public static void addNextPetShow(Pet pet,SkillN skillN){
+        if(pet==pet1){
+            nextPetShow1 = skillN;
+        }else {
+            nextPetShow2 = skillN;
+        }
+    }
 
+    /**
+     *
+     */
     public static void initUi(){
         first = true;
 
+        //窗口的拖动就不重置了 保留上一次的位置
+        /*xOld = 0;
+        yOld = 0;*/
 
-        xOld = 0;
-        yOld = 0;
+        nextPetShow1 = null;
+        nextPetShow2 = null;
 
         gameOverFlag = false;
         SpaceInterface space = null;
@@ -170,10 +214,14 @@ public class MainFrame extends JFrame {
 
 
 
+    //消息框 用来显示技能详情
     public static JLabel messageLabel;
+
+    //显示伤害和回血值得label
     public static JLabel showDamageLabel ;
 
 
+    //目前场上对战的两只宠物
     public static Pet pet1;
     public static Pet pet2;
 
@@ -295,6 +343,13 @@ public class MainFrame extends JFrame {
     //标记当前是否在播放脱手动画，脱手动画应位于顶层
     static boolean tuoShouFlag = false;
 
+    /**
+     * 将 magic 动画 和脱手技能绑定起来，一起播放
+     * @param pet           宠物
+     * @param actionnmae    宠物动画名 magic
+     * @param name  脱手技能名称
+     * @param flag  是不是玩家1
+     */
     public static void playBond(Pet pet,String actionnmae,String name,boolean flag){
 
         int time = ImageUtils.getTuoShouSkillAnimals(name).getTime();
@@ -410,7 +465,11 @@ public class MainFrame extends JFrame {
     }
 
 
-
+    /**
+     * 血量改变 要显示伤害以及更新血条
+     * @param pet
+     * @param damage    伤害值 负数为回血
+     */
     public static void bloodChange(Pet pet,int damage){
         if(pet!=pet1&&pet!=pet2)return;
         showDamage(damage,pet==pet1);
@@ -429,12 +488,28 @@ public class MainFrame extends JFrame {
             Game.connectClose();
         }
     }
+
+    /**
+     * 宠物死了  换宠     只有玩家1需要换宠 玩家2自动换宠(电脑人) 或者 他在他那里是玩家1(联网)
+     * @param pet
+     */
     public static void dead(Pet pet){
 
+
         if(pet==pet1) {
-            hideSkillLabel();
-            showPetLabels();
-            changePet.setText("战斗");
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (useSkill[0]!=-1) {
+                        sleep(20);
+                    }
+                    hideSkillLabel();
+                    showPetLabels();
+                    changePet.setText("战斗");
+                }
+            }).start();
+
         }
     }
 
@@ -443,8 +518,9 @@ public class MainFrame extends JFrame {
      */
 
 
-
-
+    /**
+     * 上一次用的技能
+     */
     public volatile static int[] useSkillOld = new int[]{-1,-1};
     public volatile static int[] useSkill = new int[]{-1,-1};
 
@@ -670,11 +746,21 @@ public class MainFrame extends JFrame {
     //换宠物
     public static void changePet(Pet pet,int index){
         if(pet==MainFrame.pet1){
+            //处理前面的宠物  赋予下一只宠物(当前宠物pet)的增益
+            if(nextPetShow1!=null) {
+                nextPetShow1.init(pet);
+            }
             MainFrame.pet1 = FightStart.getPets1()[index];
             initAttribute(MainFrame.pet1);
+            useSkillOld[0] =  -1;
+
         } else if(pet==MainFrame.pet2){
+            if(nextPetShow2!=null){
+            nextPetShow2.init(pet);}
+
             MainFrame.pet2 = FightStart.getPets2()[index];
             initAttribute(MainFrame.pet2);
+            useSkillOld[1] = -1;
         }
 
         changePet.setText("宠物");

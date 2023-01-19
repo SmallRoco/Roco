@@ -17,6 +17,7 @@ public class StatusHunLuan implements StatusInterface {
     @Override
     public int on(Pet pet) {
 
+        if(count==-1)count=4;
         if(count--<=0){return 1;}
         if(BaseFun.is(100-P)){
             if(BaseFun.is(50)){

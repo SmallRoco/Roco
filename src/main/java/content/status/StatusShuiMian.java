@@ -13,8 +13,11 @@ public class StatusShuiMian implements StatusInterface {
     }
     int count = 4;
 
+
+
     @Override
     public int on(Pet pet) {
+        if(count==-1)count=4;
         if(count--==0||BaseFun.is(25)){
             return 1;            //解除睡眠
         }

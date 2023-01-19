@@ -49,7 +49,7 @@ public class SkillDiBaoTianXing implements SkillInterface {
         MainFrame.setSpace(new BattleSpace(5,resPet==MainFrame.pet1));
         dstPet.setPpDown(5);
         resPet.setUpPower(5);
-        if(resPet.clearSelf()){
+        if(resPet.clearSelf()>0){
             resPet.setHp(resPet.getHp()+resPet.getBaseHp()*0.25);
             resPet.changePp(BaseFun.getSkillIndex(resPet,name),1);
         }

@@ -39,4 +39,9 @@ public interface SkillInterface {
 
     }
 
+
+    default void init(Pet resPet){
+
+    }
+
 }

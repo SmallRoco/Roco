@@ -27,6 +27,7 @@ public class BattleSpace implements SpaceInterface {
 
     @Override
     public void pass(int i) {
+        if(resPet.getHp()<=0)return;
         if(nowCount==1){nowCount++; return;}
         MainFrame.pawnRun(resPet,"att1");
         int damage = BaseFun.att(resPet,dstPet,(int)(20*Math.sqrt(nowCount)),false,resPet.getType());
@@ -40,7 +41,7 @@ public class BattleSpace implements SpaceInterface {
     }
 
     @Override
-    public void beMove(Pet resPet,Pet dstPet){
+    public void beMove(){
 
     }
 
