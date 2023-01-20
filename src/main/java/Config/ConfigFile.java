@@ -46,6 +46,7 @@ public class ConfigFile {
         expression.put("暂时",2);
         expression.put("短暂",2);
         expression.put("短期",2);
+        expression.put("短时间",2);
 
         typeKeZhi.put("火",new String[]{"草","冰","虫","机械"});
         typeKeZhi.put("草",new String[]{"水","土","石"});
@@ -103,6 +104,8 @@ public class ConfigFile {
         putTypes("福熙水灵","水");
         putTypes("赵云子龙","武");
         putTypes("汐纱水王","水");
+        putTypes("光之雪莉","光");
+        putTypes("魅影幽兰","冰");
 
 
         petCanSkills.put("大寒",new String[]{"怪神之力","水之护盾","净化","恩怨","沉没打击","今朝醉","敌众水澧","灯影幽峻"});
@@ -117,6 +120,8 @@ public class ConfigFile {
         petCanSkills.put("福熙水灵",new String[]{"净化","祈愿","洗礼","泄洪","水龙卷","甘霖普降","福盈门","阖家欢","春满枝","步青云"});
         petCanSkills.put("赵云子龙",new String[]{"苍龙追月","万夫莫敌","龙战于野","真龙乱舞","虚诱掩杀","蔚蓝龙息","灵域风暴","天若有情","一骑讨","龙之传承"});
         petCanSkills.put("汐纱水王",new String[]{"冰冻","圣洁","恩泽","洗礼","净化","牺牲","碧天清晓","湍玉漱石","烟波长静","灵渊移星"});
+        petCanSkills.put("光之雪莉",new String[]{"破魔之光","希望之光","光之守护","破魔圣光","极光十字","破魔圣光箭","柔如彩虹","圣光祝福","永恒思念"});
+        petCanSkills.put("魅影幽兰",new String[]{"雪隐","纯白","水汽凝结","寒冰裁决","鼓舞","寒霜涅槃","寒冰","凝霜","冰天雪地"});
     }
 
     public static void putTypes(String key,String value){

@@ -41,6 +41,12 @@ public class SkillItemLabel extends JLabel {
     public void setSkill(SkillInterface skill){
         this.pp = MainFrame.pet1.getPps()[BaseFun.getSkillIndex(MainFrame.pet1,skill.getName())];
         this.skill = skill;
+        if (pp<=0){
+            this.setIcon(itemCloseImage);
+        }else {
+            this.setIcon(itemImage);
+        }
+        repaint();
     }
 
     public SkillItemLabel(int id, SkillInterface skill) {

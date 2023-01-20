@@ -51,6 +51,6 @@ public class SkillLongZhiChuanCheng implements SkillInterface {
         resPet.setNoexception(2);
         resPet.statusChange(0,1);
         resPet.statusChange(4,1);
-        resPet.setHp(resPet.getBaseHp()+Math.max(600,resPet.getBaseHp()*0.7));
+        resPet.setHp(resPet.getHp()+Math.max(600,resPet.getBaseHp()*0.7));
     }
 }

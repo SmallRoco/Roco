@@ -12,7 +12,7 @@ public class SkillZhenLongLuanWuS implements SpaceOneInterface {
     public void pass(Pet resPet, Pet dstPet, int count) {
         if(count==1)return;
         MainFrame.pawnRun(resPet,"att1");
-        BaseFun.att(resPet,dstPet,60,true,"龙");
+        BaseFun.att(resPet,dstPet,100,true,"龙");
         if(resPet.getMark("苍龙庇佑")!=null){
             resPet.setHp(resPet.getHp()+75);
         }

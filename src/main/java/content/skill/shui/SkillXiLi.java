@@ -44,7 +44,7 @@ public class SkillXiLi implements SkillInterface {
         BaseFun.att(resPet,dstPet,power,physical,type);
         int petGreatBuffCount = BaseFun.getPetGreatBuffCount(dstPet);
         if(BaseFun.deleteOtherGreatBuff(dstPet,0)){
-            resPet.setHp(resPet.getBaseHp()+petGreatBuffCount*20);
+            resPet.setHp(resPet.getHp()+petGreatBuffCount*20);
         }
     }
 

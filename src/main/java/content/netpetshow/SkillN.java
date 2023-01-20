@@ -21,6 +21,8 @@ public class SkillN implements NextPetShowInterface {
                 for (int j = 0; j <7; j++) {
                     pet.statusChange(j,-1);
                 }
+            }else if(contents[i].equals("冰冻")){
+                pet.addStatus("冰冻");
             }
         }
     }

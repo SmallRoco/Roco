@@ -106,8 +106,11 @@ public class Pet{
     int attLimitPower = 100;
     //攻击限制的回合数
     int attLimitCount = 0;
+    //锁定强化的回合数
+    int lockBuffCount = 0;
 
 
+    //回合结束
     public void pass(){
         if(noDeBuff>0&&noDeBuff<1000)noDeBuff--;
         if(noexception>0&&noexception<1000)noexception--;
@@ -116,6 +119,7 @@ public class Pet{
         if(maxDamaged>0&&maxDamaged<1000)maxDamaged--;
         if(downHitRate>0&&downHitRate<1000)downHitRate--;
         if(attLimitCount>0&&attLimitCount<1000)attLimitCount--;
+        if(lockBuffCount>0&&lockBuffCount<1000)lockBuffCount--;
         Set<String> strings = marks.keySet();
         String[] strings1 = new String[strings.size()];
         strings.toArray(strings1);
@@ -155,6 +159,8 @@ public class Pet{
 
         //判断锁定
         // return false;
+
+        if(getLockBuffCount()>0)return false;       //强化锁定
 
         if(changeValue<0&&noDeBuff>0)return false;
 
@@ -321,6 +327,19 @@ public class Pet{
         }
         return count;
     }
+
+    /**
+     * 清除强化
+     */
+    public int clearBuff(){
+
+        for (int i = 0; i <7; i++) {
+            appendStatus[i]=0;
+
+        }
+        MainFrame.showStatusMessage();
+        return 0;
+    }
     /**
      * 清除强化
      */
@@ -338,6 +357,7 @@ public class Pet{
         if(noexception>0)return false;
         if(getMark(name+"免疫")!=null)return false;
         if("寄生".equals(name)&&getType().contains("草"))return false;
+        if("冰冻".equals(name)&&getType().contains("冰"))return false;
         if("烧伤".equals(name)){
             if(this.getType().contains("火")){       //火和神火无法烧伤
                 return false;
@@ -495,18 +515,30 @@ public class Pet{
 
         //System.out.println("Miss:"+dstPet.getMiss());
         //如果miss
-        if(ConfigFile.MISS_START&&!skill.doSelf()&&BaseFun.is((int) Math.sqrt(((dstPet.getMiss())-getHitRate())/1.3))){MainFrame.missFlag = true;
-            if(ConfigFile.CHANGE_PP&&ppDown>0)changePp(id,-(int)(basePps[id]*0.2));                                                //pp-2
-            changePp(id,-1);                                                //pp-1
-            if(this==MainFrame.pet1)MainFrame.skillItemLabels[id].setPp(this.pps[id]);  //设置pp槽
-            MainFrame.showDamage(0,this!=MainFrame.pet1);    skill.miss(this,dstPet);  spaceHandler(1);return;}
-        if(ConfigFile.MISS_START&&!skill.doSelf()&&((dstPet.getMissRestraint()>0&&BaseFun.attritube(dstPet.getType(),this)==1)||dstPet.getNoDamage()>0)){
-            if(ConfigFile.CHANGE_PP&&ppDown>0)changePp(id,-(int)(basePps[id]*0.2));                                                //pp-2
-            changePp(id,-1);                                                //pp-1
-            if(this==MainFrame.pet1)MainFrame.skillItemLabels[id].setPp(this.pps[id]);  //设置pp槽
-            MainFrame.missFlag = true;
-            MainFrame.showDamage(0,this!=MainFrame.pet1);    skill.miss(this,dstPet);  spaceHandler(1);return;
+        if(!skill.hitMust()) {      //是否必定命中
+            if (ConfigFile.MISS_START && !skill.doSelf() && BaseFun.is((int) Math.sqrt(((dstPet.getMiss()) - getHitRate()*skill.hitUp()) * 1.3))) {
+                MainFrame.missFlag = true;
+                if (ConfigFile.CHANGE_PP && ppDown > 0)
+                    changePp(id, -(int) (basePps[id] * 0.2));                                                //pp-2
+                changePp(id, -1);                                                //pp-1
+                if (this == MainFrame.pet1) MainFrame.skillItemLabels[id].setPp(this.pps[id]);  //设置pp槽
+                MainFrame.showDamage(0, this != MainFrame.pet1);
+                skill.miss(this, dstPet);
+                spaceHandler(1);
+                return;
+            }
+            if (ConfigFile.MISS_START && !skill.doSelf() && ((dstPet.getMissRestraint() > 0 && BaseFun.attritube(dstPet.getType(), this) == 1) || dstPet.getNoDamage() > 0)) {
+                if (ConfigFile.CHANGE_PP && ppDown > 0)
+                    changePp(id, -(int) (basePps[id] * 0.2));                                                //pp-2
+                changePp(id, -1);                                                //pp-1
+                if (this == MainFrame.pet1) MainFrame.skillItemLabels[id].setPp(this.pps[id]);  //设置pp槽
+                MainFrame.missFlag = true;
+                MainFrame.showDamage(0, this != MainFrame.pet1);
+                skill.miss(this, dstPet);
+                spaceHandler(1);
+                return;
 
+            }
         }
         //对目标使用技能
         skill.skill(this,dstPet);
@@ -1111,5 +1143,14 @@ public class Pet{
         }
         MainFrame.showStatusMessage();
         return 0;
+    }
+
+
+    public int getLockBuffCount() {
+        return lockBuffCount;
+    }
+
+    public void setLockBuffCount(int lockBuffCount) {
+        this.lockBuffCount = lockBuffCount;
     }
 }

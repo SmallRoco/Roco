@@ -44,4 +44,17 @@ public interface SkillInterface {
 
     }
 
+
+    default boolean hitMust(){
+        return false;
+    }
+
+    /**
+     * 命中提升
+     * @return
+     */
+    default double hitUp(){
+        return 1.0;
+    }
+
 }

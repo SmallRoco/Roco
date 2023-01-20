@@ -10,6 +10,7 @@ import java.util.Arrays;
 
 public class Test {
 
+
     public static void main(String[] args) {
 
         String[] list = new File(AllConfig.rootPath + "脱手技能").list();

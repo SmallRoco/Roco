@@ -19,6 +19,9 @@ public class SkillShuiQINingJie implements SkillInterface {
     }
     @Override
     public void skill(Pet resPet, Pet dstPet) {
+        if(dstPet.getType().contains("水")){
+            BaseFun.att(resPet,dstPet, (int) (power*1.8),physical,type);
+        }
         BaseFun.att(resPet,dstPet,power,physical,type);
         if(BaseFun.is(80)){
             dstPet.addStatus("冰冻");

@@ -67,7 +67,7 @@ public class BaseFun {
                 Pet dstPet1 = pets[random];
 
                 //如果miss
-                if(ConfigFile.MISS_START&&BaseFun.is(((dstPet1.getMiss())-resPet.getHitRate())/15)){
+                if(ConfigFile.MISS_START && BaseFun.is((int) Math.sqrt(((dstPet.getMiss()) - resPet.getHitRate()) * 1.3))){
                     return false;
                 }
                 if(ConfigFile.MISS_START&&((dstPet1.getMissRestraint()>0&&BaseFun.attritube(dstPet.getType(),resPet)==1)||dstPet1.getNoDamage()>0)){
@@ -173,7 +173,7 @@ public class BaseFun {
         int count = 0;
         for (int i = 0; i <resPet.getSkills().size(); i++) {
             if(resPet.getSkills().get(i)!=null){
-                resPet.getPps()[i] +=change;
+                resPet.changePp(i,change);
                 count += change;
             }
         }
@@ -191,7 +191,7 @@ public class BaseFun {
         for (int i = 0; i <resPet.getSkills().size(); i++) {
             if(resPet.getSkills().get(i)!=null){
                 if(resPet.getSkills().get(i).getPp()==1)continue;
-                resPet.getPps()[i] +=change;
+                resPet.changePp(i,change);
                 count += change;
             }
         }
@@ -275,7 +275,7 @@ public class BaseFun {
      * @return 是否中
      */
     public synchronized static boolean is(int pacent){
-
+        if(randomIndex==1024)randomIndex = 0;
         if(Game.connectFlag){
             return BaseFun.random[randomIndex++]<pacent;
         }
@@ -289,6 +289,7 @@ public class BaseFun {
      * @return
      */
     public synchronized static int getRandom(int i){
+        if(randomIndex==1024)randomIndex = 0;
         if(Game.connectFlag){
             return BaseFun.random[randomIndex++];
         }
@@ -384,6 +385,9 @@ public class BaseFun {
             damage*=1.25;
         }
 
+        if(srcPet.getAttLimit()>100){
+            System.out.println(srcPet.getAttLimit());
+        }
         damage *= srcPet.getAttLimit()/100.0;
 
         dstPet.setHp(dstPet.getHp()-damage);
