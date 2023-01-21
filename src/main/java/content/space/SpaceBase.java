@@ -36,7 +36,9 @@ public class SpaceBase implements SpaceInterface{
     public void pass(int i) {
         nowCount++;
         if(dstPet.getHp()<=0)return;
-        spaceOne.pass(resPet,dstPet,nowCount);
+        if(i!=0|| !spaceOne.isJump()) {
+            spaceOne.pass(resPet, dstPet, nowCount);
+        }
     }
 
     @Override

@@ -26,4 +26,9 @@ public class SkillBingTianXueDiS implements SpaceOneInterface {
     public void beMove(Pet resPet, Pet dstPet) {
 
     }
+
+    @Override
+    public boolean isJump() {
+        return false;
+    }
 }

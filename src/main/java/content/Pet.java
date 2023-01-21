@@ -462,17 +462,16 @@ public class Pet{
         for (String s:ss) {
             SpaceInterface space = spaces.get(s);
             if(space==null)return;
-            if(space.getDst().getHp()<=0){
-                if(this==MainFrame.pet1){
-                    if(MainFrame.pet2!=space.getDst()){     //换人了
-                        space.setDst(MainFrame.pet2);
-                    }
-                }else {
-                    if(MainFrame.pet1!=space.getDst()){     //换人了
-                        space.setDst(MainFrame.pet1);
-                    }
+            if(this==MainFrame.pet1){
+                if(MainFrame.pet2!=space.getDst()){     //换人了
+                    space.setDst(MainFrame.pet2);
+                }
+            }else {
+                if(MainFrame.pet1!=space.getDst()){     //换人了
+                    space.setDst(MainFrame.pet1);
                 }
             }
+
             space.pass(i);
             if(space.isEnd())spaces.remove(s);
         }
@@ -495,6 +494,7 @@ public class Pet{
 
         if(getHp()<=0)return;
 
+        if(id==9)return;                                 //对面被打死，换宠物跳过回合
         if(id>4||id<0){spaceHandler(0);return;}       //跳过回合
         if(getMark("混乱")!=null){dstPet = this;removeMark("混乱");}
         SkillInterface skill = skills.get(id);                                      //获取此次使用的技能
@@ -1073,7 +1073,7 @@ public class Pet{
         if(maxDamaged>0){
             return maxDamagedPower;
         }
-        return Integer.MAX_VALUE;
+        return 999999;
     }
 
     public int getDownHitRate() {

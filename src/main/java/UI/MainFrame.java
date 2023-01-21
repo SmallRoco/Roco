@@ -80,6 +80,9 @@ public class MainFrame extends JFrame {
     //环境label   环境天气没有区分开 后面才知道有天气和环境之分
     public static JLabel environmentLabel ;
 
+    //宠物死亡的标志， 01为右面死，10为左面死
+    public static int deadFlag = -1;
+
 
     //标记是否暴击
     public volatile static boolean boomFlag ;
@@ -210,6 +213,9 @@ public class MainFrame extends JFrame {
         useSkill[1] = -1;
         useSkillOld[0] =  -1;
         useSkillOld[1] = -1;
+
+
+        deadFlag = -1;
     }
 
 
@@ -496,6 +502,7 @@ public class MainFrame extends JFrame {
     public static void dead(Pet pet){
 
 
+
         if(pet==pet1) {
 
             new Thread(new Runnable() {
@@ -509,6 +516,8 @@ public class MainFrame extends JFrame {
                     changePet.setText("战斗");
                 }
             }).start();
+
+        }else {
 
         }
     }
@@ -605,13 +614,20 @@ public class MainFrame extends JFrame {
 
             }else {
 
+                //如果己方宠物都死了
                 if(BaseFun.getPetCountInDead(FightStart.getPets1())==BaseFun.getPetsCount(FightStart.getPets1())){
                     return false;
                 }
+
+                //如果对面没出招
                 if(useSkill[1]<0) {
 
                     if (pet2.getHp() > 0) {
-                        pet2.getAi().useSkill(pet2, pet1);
+                        if(pet1.getHp()<=0){
+                            useSkill[1]= 9;
+                        }else {
+                            pet2.getAi().useSkill(pet2, pet1);
+                        }
                     } else {
 
                         count =0;
@@ -623,7 +639,21 @@ public class MainFrame extends JFrame {
                         }
                         useSkill[1] = 10 + count;
                     }
+
+
                 }
+
+                if(useSkill[0]<0&&deadFlag>0){
+                    int i = deadFlag/100-1;
+                    if(i>=0){
+                        useSkill[0]=i;
+                    }
+
+                    deadFlag =-1;
+                }
+
+
+
 
                 sleep(50);
             }
@@ -697,6 +727,17 @@ public class MainFrame extends JFrame {
                 if(BaseFun.getPetCountInDead(FightStart.getPets2())==BaseFun.getPetsCount(FightStart.getPets2())){
                     return true;
                 }
+
+
+                if(useSkill[0]<0&&deadFlag>0){
+                    int i = deadFlag/100-1;
+                    if(i>=0){
+                        useSkill[0]=i;
+                    }
+                    Game.write(MainFrame.useSkill[0]+"");
+                    deadFlag =-1;
+                }
+
                 if(useSkill[1]<0){
                     String read = Game.read();
                     //System.out.println("read:"+read);
@@ -707,9 +748,9 @@ public class MainFrame extends JFrame {
                         useSkill[1] = Integer.parseInt(read);
                     }
                 }
+
+                sleep(50);
             }
-
-
 
         }
 

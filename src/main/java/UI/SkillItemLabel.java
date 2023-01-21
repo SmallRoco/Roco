@@ -61,7 +61,13 @@ public class SkillItemLabel extends JLabel {
 
                 if("战斗".equals(MainFrame.changePet.getText())){return;}
                 if(pp>0) {
-                    MainFrame.useSkill[0] = SkillItemLabel.this.id;
+                    if(MainFrame.pet2.getHp()<=0){
+                        MainFrame.useSkill[0] = 9;
+                        MainFrame.deadFlag = 0;
+                        MainFrame.deadFlag+=SkillItemLabel.this.id*100+100;
+                    }else {
+                        MainFrame.useSkill[0] = SkillItemLabel.this.id;
+                    }
                     if(Game.connectFlag){
                         Game.write(MainFrame.useSkill[0]+"");
                     }
